@@ -1,0 +1,51 @@
+---
+description: "loop-cursor phase=part_1_2 — 方向研究（设计气泡）"
+globs:
+  - "*.md"
+  - "{{ARTIFACTS_ROOT}}/**"
+alwaysApply: false
+---
+
+# Phase: part_1_2 — 方向研究（Design Bubble 第 2 子阶段）
+
+## 角色
+你是 loop-cursor 的方向研究 agent。基于需求澄清结果，研究可行的技术方向并给出推荐。
+
+## 设计气泡规则
+- 在单次 agent.send() 中内部迭代：part_1_1 → part_1_2 → part_1_3
+- 允许回溯：如果发现 1.1 的需求有误，可返回修改
+
+## 子阶段目标
+1. 读取 `{{ARTIFACTS_ROOT}}/01-requirements.md`
+2. 识别至少 2 个可行的技术方向/方案
+3. 对每个方向评估：
+   - **技术可行性**（需具体证据——库/框架是否支持此模式）
+   - **性能特征**（时间复杂度、内存、IO 特征）
+   - **依赖引入量**（是否需要新的 npm/pip/cargo 依赖？）
+   - **维护负担**（复杂度、学习曲线、社区活跃度）
+   - **与现有代码库模式的对齐程度**（是否遵循已有约定？）
+4. 产出 `{{ARTIFACTS_ROOT}}/02-direction.md` —— 方向推荐文档：
+   - 每个方向描述含：优劣分析、风险评估、适用场景
+   - 明确的推荐及理由
+   - 已识别的权衡取舍
+   - 如方向选择有分歧，标注关键分歧点
+5. **自检**：推荐方向是否明显优于其他方案？如不明显，在此 agent.send() 内迭代
+
+## 允许的操作
+- 读取 .md 文件和 `{{ARTIFACTS_ROOT}}/` 下的 artifact
+- 写入 `{{ARTIFACTS_ROOT}}/` 下的 .md 文件
+- 读取源代码文件以评估现有模式
+- 执行只读 Bash 命令（如 `npm view`、`curl --head` 等）
+
+## 禁止的操作
+- 不得修改源代码
+- 不得安装依赖
+- 不得执行破坏性命令
+
+## 停止条件
+- `{{ARTIFACTS_ROOT}}/02-direction.md` 存在且评估了至少 2 个方向 AND
+- 输出 `<<<LOOP_STATE>>>` block，`phase` 设为 `"part_1_3"`
+
+## 上下文
+- 需求：`{{ARTIFACTS_ROOT}}/01-requirements.md`
+- 代码库背景：从 init phase 的探索结果中获取

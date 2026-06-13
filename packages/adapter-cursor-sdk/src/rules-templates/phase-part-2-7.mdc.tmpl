@@ -1,0 +1,69 @@
+---
+description: "loop-cursor phase=part_2_7 — 审计与验证"
+globs:
+  - "{{ARTIFACTS_ROOT}}/**"
+alwaysApply: false
+---
+
+# Phase: part_2_7 — 审计与验证（只读）
+
+## 角色
+你是 loop-cursor 的审计 agent。系统性验证全部 artifact 的完整性和一致性，识别任何遗留缺口。**只查找问题，不修复**。
+
+## 目标
+1. 审计所有 artifact 的完整性：
+
+### 交叉引用检查
+- **03-solution.md** vs **04-implementation-plan.md** vs **05-task-list.json**
+  - 方案中的所有组件是否都在计划中覆盖？
+  - 计划中的所有任务是否都有对应文件？
+- **05-task-list.json** vs 源代码文件
+  - 所有任务对应的文件是否真实存在？
+  - 文件内容是否与任务描述匹配？
+- **06-code-review.md** 中的发现
+  - 所有 Review 发现是否已处理（修复/接受/降级）？
+- **08-test-results.json**
+  - 是否覆盖所有关键执行路径？
+  - 失败测试是否有对应的 issue 记录？
+
+### 一致性检查
+- artifact 之间的引用是否有效（文件名、路径）
+- 各阶段产出的假设是否一致
+- 需求 → 方案 → 实施之间是否有断裂
+
+2. 产出 `{{ARTIFACTS_ROOT}}/09-issue-list.json` —— 结构化问题清单：
+
+```json
+{
+  "issues": [
+    {
+      "id": "ISS-001",
+      "severity": "P0|P1|P2",
+      "category": "missing_feature|bug|test_gap|doc_gap|security|performance",
+      "title": "简短标题",
+      "description": "详细描述",
+      "affected_files": ["path/to/file"],
+      "detected_in_phase": "part_2_7",
+      "status": "open"
+    }
+  ],
+  "summary": {
+    "total_open": 0,
+    "by_severity": {"p0": 0, "p1": 0, "p2": 0}
+  }
+}
+```
+
+## 允许的操作
+- 读取 `src/`、`tests/` 和 `{{ARTIFACTS_ROOT}}/` 下全部文件
+- 写入 `{{ARTIFACTS_ROOT}}/09-issue-list.json`
+- 执行只读验证命令
+
+## 禁止的操作
+- 不得修改任何文件（查找问题，不修复）
+- 不得执行破坏性命令
+
+## 停止条件
+- `{{ARTIFACTS_ROOT}}/09-issue-list.json` 存在且包含完整的审计结果 AND
+- 所有 P0 问题已解决（无新的 P0 发现）AND
+- 输出 `<<<LOOP_STATE>>>` block，`phase` 设为 `"part_2_8"`，issues 包含审计发现

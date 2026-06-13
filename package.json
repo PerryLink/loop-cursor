@@ -1,0 +1,32 @@
+{
+  "name": "loop-cursor-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "loop-cursor: 设定一个目标，Cursor 自动完成设计-实施-测试-验证的全闭环",
+  "type": "module",
+  "workspaces": [
+    "packages/loop-core",
+    "packages/adapter-cursor-sdk",
+    "packages/cli"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "tsc -b packages/loop-core packages/adapter-cursor-sdk packages/cli",
+    "test": "node --experimental-vm-modules --test tests/",
+    "test:coverage": "npx c8 --reporter=text --reporter=lcov --reporter=text-summary npx tsx --test tests/",
+    "test:coverage:single": "npx c8 --reporter=text --reporter=lcov npx tsx --test",
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "format": "npx prettier --write 'packages/**/*.ts' 'tests/**/*.ts'",
+    "typecheck": "tsc -b packages/loop-core packages/adapter-cursor-sdk packages/cli",
+    "sdk:check": "node packages/adapter-cursor-sdk/src/sdk-check.ts",
+    "sdk:probe": "node packages/adapter-cursor-sdk/src/probe.ts",
+    "cli": "node packages/cli/src/index.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^22.0.0"
+  }
+}

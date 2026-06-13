@@ -1,0 +1,70 @@
+---
+description: "loop-cursor phase=part_2_2 — Implementation"
+globs:
+  - "src/**"
+  - "tests/**"
+  - "{{ARTIFACTS_ROOT}}/**"
+alwaysApply: false
+---
+
+# loop-cursor: Implementation Phase (part_2_2)
+
+You are currently executing the **Implementation** phase of the loop-cursor automated development cycle.
+This is the phase where the actual code is written based on the plan produced in part_2_1.
+
+## Phase Context
+
+- **Phase ID:** part_2_2
+- **Phase Goal:** Implement all tasks defined in the plan
+- **Artifacts Root:** `{{ARTIFACTS_ROOT}}`
+- **Plan File:** `{{ARTIFACTS_ROOT}}/plan.md`
+- **Task File:** `{{ARTIFACTS_ROOT}}/tasks.json`
+
+## Instructions
+
+### 1. Read the Plan
+Before writing any code, read the plan from `{{ARTIFACTS_ROOT}}/plan.md` and tasks from `{{ARTIFACTS_ROOT}}/tasks.json`. Understand the full scope of implementation required.
+
+### 2. Implement Task by Task
+- Work through tasks in the order defined in `tasks.json`.
+- For each task, write the necessary code, respecting existing project conventions.
+- After completing each task, update its status in `{{ARTIFACTS_ROOT}}/tasks.json` to `"completed"`.
+
+### 3. Coding Standards
+- Follow the existing code style of the project (indentation, naming conventions, module structure).
+- Use TypeScript with strict types where the project uses TypeScript.
+- Import with ES module syntax (`import ... from "..."`) unless the project uses CommonJS.
+- Add JSDoc comments for public functions and exported types.
+- Do NOT introduce new dependencies without documenting the reason in the task file.
+
+### 4. File Scope
+- You may write files **only** within:
+  - `src/**` (source files)
+  - `tests/**` (test files)
+  - `{{ARTIFACTS_ROOT}}/**` (artifacts / phase outputs)
+- Do NOT modify configuration files (package.json, tsconfig.json, etc.) unless the task explicitly requires it.
+- Do NOT touch `.cursor/` directory files——they are managed by the engine.
+
+### 5. Progress Reporting
+After implementing each task, append a brief status line to `{{ARTIFACTS_ROOT}}/implementation-log.md`:
+```markdown
+- [{{TIMESTAMP}}] Task {{TASK_ID}}: {{STATUS}} — {{SUMMARY}}
+```
+
+### 6. Error Handling
+- If a task cannot be completed due to missing information, document the blocker in `{{ARTIFACTS_ROOT}}/implementation-log.md` with the `[BLOCKED]` prefix.
+- If you encounter a design-level issue (the plan is wrong or incomplete), classify it as P0 and route back to Part 1 via the `<<<LOOP_STATE>>>` SAP block.
+
+### 7. Completion Criteria
+When all tasks are implemented:
+1. Update all task statuses to `"completed"` in `tasks.json`.
+2. Write a summary of all changes to `{{ARTIFACTS_ROOT}}/implementation-summary.md`.
+3. Emit the `<<<LOOP_STATE>>>` SAP block with `phase_status: "completed"`.
+
+## Prohibited Behaviors
+- Do NOT skip tasks marked as `"required"`.
+- Do NOT refactor code outside the scope of the current task.
+- Do NOT delete or modify existing tests unless instructed by the task.
+- Do NOT commit or push to git——the engine manages version control.
+- Do NOT run destructive commands (rm -rf, git reset --hard, etc.).
+- Do NOT install npm packages without documenting in the task file.

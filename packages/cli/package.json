@@ -1,0 +1,26 @@
+{
+  "name": "loop-cursor",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "loop-cursor CLI 入口：Bun 编译的 CLI wrapper，参数解析 + spawn Node.js SDK 引擎",
+  "type": "module",
+  "bin": {
+    "loop-cursor": "./src/index.ts"
+  },
+  "main": "./src/index.ts",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "bun build ./src/index.ts --outfile ./dist/loop-cursor --target node"
+  },
+  "dependencies": {
+    "@loop-cursor/core": "*",
+    "@loop-cursor/adapter-cursor-sdk": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^22.0.0"
+  }
+}

@@ -1,0 +1,87 @@
+---
+description: "loop-cursor global safety rule — always active across all phases"
+globs: []
+alwaysApply: true
+---
+
+# loop-cursor: Global Safety & Protocol Rule
+
+This rule is **always active** across all phases of the loop-cursor automated development cycle.
+It defines the universal safety constraints and communication protocol that the agent must follow
+regardless of the current phase.
+
+## Safety Constraints (ALWAYS ENFORCED)
+
+### L0 - Catastrophic (IMMEDIATE BLOCK)
+The following operations are **never** allowed under any circumstances:
+- `rm -rf /` or any recursive delete on root paths
+- `mkfs.*` or any filesystem format commands
+- `DROP TABLE` or `DROP DATABASE` in SQL
+- `git push --force` to `main` or `master`
+- Any command that modifies files outside the project root
+- `curl | bash` or `wget -O - | sh` (pipe-to-shell)
+
+### L1 - Irreversible (BLOCK unless explicitly approved)
+The following operations require explicit confirmation:
+- `git reset --hard`
+- `git clean -fdx`
+- Deleting files outside `node_modules/` or build output directories
+- Modifying `.git/config` or `.git/hooks/`
+- Environment variable modifications that persist across sessions
+
+### L2 - File Scope (WARN if outside scope)
+- Writing files outside the allowed globs for the current phase is prohibited.
+- Each phase defines its allowed file scope via the phase rule's `globs` frontmatter.
+- If a task requires writing outside the current scope, report it as a scope violation.
+
+## Communication Protocol
+
+### SAP Block (<<<LOOP_STATE>>>)
+All phase status transitions must be communicated via the SAP block protocol:
+
+```
+<<<LOOP_STATE>>>
+{
+  "phase": "{{CURRENT_PHASE}}",
+  "phase_status": "completed|failed|blocked",
+  "issues_classified": {"p0": 0, "p1": 0, "p2": 0},
+  "artifacts_generated": ["..."],
+  "requires_routing": false,
+  "routing_target": null,
+  "summary": "Brief description of what was accomplished."
+}
+<<<END_LOOP_STATE>>>
+```
+
+### Issue Classification
+When reporting issues, classify them by severity:
+- **P0:** Requirements/design/architecture error — mandates return to Part 1 (design bubble)
+- **P1:** Core functionality missing or security vulnerability — decision tree (design-level or implementation-level)
+- **P2:** Edge case, UI polish, or minor bug — can be fixed in current Part 2 phase
+
+## Resource Limits
+- **Token Budget:** Monitor token consumption. If approaching the model's context limit, summarize and request guidance.
+- **API Calls:** Do not make more than 3 consecutive API calls without producing a user-visible artifact.
+- **Disk Usage:** Do not create files larger than 10MB without documenting the reason.
+- **Time:** If a single operation takes more than 60 seconds, report progress.
+
+## Error Recovery
+- If an API call fails with a transient error (429, 5xx), retry up to 3 times with exponential backoff.
+- If an API call fails with a permanent error (400, 401, 403), report and do NOT retry.
+- If the state file (`{{STATE_PATH}}`) is corrupted, report and request engine intervention.
+- Never attempt to fix engine-managed files (`.cursor/`, `state.json`, gate files).
+
+## Prohibited Behaviors (ALWAYS)
+1. Do NOT attempt to modify the loop-cursor engine code.
+2. Do NOT disable or bypass guard gates.
+3. Do NOT make external network requests without explicit task approval.
+4. Do NOT impersonate the user or make decisions that require user judgment.
+5. Do NOT remove or tamper with the `<<<LOOP_STATE>>>` SAP block in responses.
+6. Do NOT skip the convergence check at the end of each phase.
+7. Do NOT exceed the `max_turns` limit for any phase.
+
+## Artifacts Convention
+- All phase outputs go to `{{ARTIFACTS_ROOT}}/`.
+- File naming: `{phase-slug}-{artifact-type}.md` (e.g., `part-2-2-implementation-summary.md`).
+- Use markdown for all text artifacts.
+- Use JSON for structured data artifacts (tasks, test results, issue lists).

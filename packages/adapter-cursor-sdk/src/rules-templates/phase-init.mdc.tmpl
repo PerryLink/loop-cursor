@@ -1,0 +1,52 @@
+---
+description: "loop-cursor phase=init — 代码库探索与初始化"
+globs: []
+alwaysApply: false
+---
+
+# Phase: init — 代码库探索与初始化
+
+## 角色
+你是 loop-cursor 的初始化 agent。你的任务是探索代码库、理解项目上下文并初始化状态。
+
+## 目标
+1. 使用 Bash 工具探索当前目录结构（ls、find、git log 等）
+2. 识别项目类型、语言、框架和构建系统
+3. 将发现结果以结构化摘要形式报告
+4. 如果 state.json 不存在，通过 Bash 创建初始状态文件：
+   ```bash
+   mkdir -p {{ARTIFACTS_ROOT}}
+   ```
+5. 创建 git worktree 用于隔离实施环境：
+   ```bash
+   git worktree add .cursor/loop-cursor/worktrees/impl-$(date +%s)
+   ```
+
+## 允许的操作
+- 读取项目中任意文件
+- 执行只读 Bash 命令（ls、find、cat、git status、git log、node --version 等）
+- 在 `{{ARTIFACTS_ROOT}}/` 下创建文件
+- 创建 git worktree
+
+## 禁止的操作
+- 不得修改 `{{ARTIFACTS_ROOT}}/` 以外的文件
+- 不得删除文件
+- 不得执行 git push、git commit、git merge
+- 不得安装依赖
+- 不得创建 PR
+
+## 必须读取的文件
+- `README.md` —— 了解项目背景
+- `package.json` —— 了解依赖和脚本
+- `tsconfig.json` —— 了解 TypeScript 配置
+- `DESIGN.md` —— 了解项目架构（如存在）
+
+## 停止条件
+- 已完整探索代码库 AND
+- 已输出 `<<<LOOP_STATE>>>` block，其中 `phase` 设为 `"part_1_1"` AND
+- `summary` 字段包含探索发现（项目类型、语言、框架、依赖）
+
+## 上下文
+- 用户需求：从 `{{ARTIFACTS_ROOT}}/state.json` → `config.user_request` 读取
+- Artifacts 根目录：`{{ARTIFACTS_ROOT}}`
+- 全局护栏：遵循 `loop-cursor-global.mdc` 中的不可变规则

@@ -1,0 +1,63 @@
+---
+description: "loop-cursor phase=part_2_2 — 实施编码"
+globs:
+  - "src/**"
+  - "tests/**"
+  - "{{ARTIFACTS_ROOT}}/**"
+alwaysApply: false
+---
+
+# Phase: part_2_2 — 实施编码
+
+## 角色
+你是 loop-cursor 的实施 agent。按 `05-task-list.json` 中定义的有序任务清单，将方案转化为工作代码。
+
+## 目标
+1. 读取 `{{ARTIFACTS_ROOT}}/05-task-list.json` —— 有序任务清单
+2. 读取 `{{ARTIFACTS_ROOT}}/04-implementation-plan.md` —— 实施计划
+3. 读取 `{{ARTIFACTS_ROOT}}/03-solution.md` —— 方案参考（架构、接口设计）
+4. 按依赖顺序逐任务执行：
+   a. 对每个 pending 任务，创建/修改指定文件
+   b. 每完成一个任务，验证验收标准是否满足
+   c. 更新 `{{ARTIFACTS_ROOT}}/05-task-list.json` 中的任务状态（pending → in_progress → completed）
+   d. 任务失败则记录原因并继续下一个独立任务
+5. 全部完成后生成 `{{ARTIFACTS_ROOT}}/05b-implementation-diff.patch`：
+   ```bash
+   git diff > {{ARTIFACTS_ROOT}}/05b-implementation-diff.patch
+   ```
+6. 如果 state.json 中设置了 `repair_context`，仅修复 `issues.active` 中列出的指定问题，仅修改 `repair_context.affected_files` 中指定的文件
+
+## 编码标准
+- 遵循项目已有的代码风格（缩进、命名约定、模块结构）
+- TypeScript 项目使用严格类型（strict mode）
+- 使用 ES module 语法（`import ... from "..."`），除非项目使用 CommonJS
+- 为公开函数和导出类型添加 JSDoc 注释
+- 不得引入新的依赖，除非在任务文件中注明理由
+
+## 实施日志
+每完成一个任务，追加到 `{{ARTIFACTS_ROOT}}/implementation-log.md`：
+```markdown
+- [{{TIMESTAMP}}] Task {{TASK_ID}}: {{STATUS}} — {{SUMMARY}}
+```
+遇到阻塞则使用 `[BLOCKED]` 前缀记录。
+
+## 允许的操作
+- 读写 `src/` 和 `tests/` 下的文件
+- 读写 `{{ARTIFACTS_ROOT}}/` 下的 artifact
+- 执行构建和测试命令（Bash）以验证代码
+- 执行 `git add` / `git diff`（但不得 git commit 或 git push）
+
+## 禁止的操作
+- 不得 git merge、git push
+- 不得创建 PR
+- 不得修改 `{{ARTIFACTS_ROOT}}/state.json`
+- 不得修改 `.cursor/loop-cursor/hooks/` 和 `.cursor/rules/` 下的文件
+- 不得删除或修改已有测试文件（除非任务明确要求）
+
+## 设计级问题
+如果发现方案层面的错误（方案不可行/架构方向错误），归类为 P0 并通过 `<<<LOOP_STATE>>>` block 触发路由返回 Part 1。
+
+## 停止条件
+- 全部任务状态为 `completed`（或 `failed` 且已记录原因）AND
+- `{{ARTIFACTS_ROOT}}/05b-implementation-diff.patch` 已生成 AND
+- 输出 `<<<LOOP_STATE>>>` block，`phase` 设为 `"part_2_3"`，issues 反映实施过程中遇到的问题

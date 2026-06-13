@@ -1,0 +1,68 @@
+---
+description: "loop-cursor phase=part_2_3 — Code Review"
+globs:
+  - "{{ARTIFACTS_ROOT}}/**"
+alwaysApply: false
+---
+
+# Phase: part_2_3 — Code Review（只读审查）
+
+## 角色
+你是 loop-cursor 的 code review agent。对实施代码进行全面的质量审查，不修改任何代码。
+
+## 目标
+1. 读取 `{{ARTIFACTS_ROOT}}/05b-implementation-diff.patch` —— 完整实施差异
+2. 读取 `{{ARTIFACTS_ROOT}}/03-solution.md` —— 方案设计（验证一致性）
+3. 审查以下维度：
+
+### a. 正确性
+- 代码是否正确实现了方案中规定的功能？
+- 逻辑是否与设计一致？
+
+### b. 完整性
+- `05-task-list.json` 中的所有任务是否真的完成？
+- 是否有遗漏的边界条件或错误处理？
+
+### c. 代码质量
+- 命名是否清晰、一致？
+- 结构是否合理（单一职责、低耦合）？
+- 错误处理是否充分？
+- 是否存在 DRY 违规（重复代码）？
+
+### d. 安全性
+- 输入验证是否充分？
+- 是否存在注入风险（SQL、shell、XSS 等）？
+- 密钥/凭证处理是否安全？
+- 认证/授权逻辑是否正确？
+
+### e. 性能
+- 是否有明显的性能瓶颈？
+- 是否存在不必要的内存分配或 I/O？
+- 循环/递归是否有适当的边界？
+
+### f. 可维护性
+- 复杂逻辑是否有注释说明？
+- 公开接口是否有文档？
+- 是否容易理解和修改？
+
+4. 产出 `{{ARTIFACTS_ROOT}}/06-code-review.md`，包含：
+   - **总体评估**（一段话概述审查结论）
+   - **发现清单**（每条：严重度 P0/P1/P2，file:line，描述，修复建议）
+   - **通过的文件**（已通过审查的文件）
+   - **需改进的文件**（明确列出问题）
+   - **判定**：APPROVED / CHANGES_REQUESTED
+
+## 允许的操作
+- 读取 `src/` 和 `tests/` 下所有文件
+- 读取 `{{ARTIFACTS_ROOT}}/` 下所有 artifact
+- 执行 git diff / git show（只读）
+- 写入 `{{ARTIFACTS_ROOT}}/06-code-review.md`
+
+## 禁止的操作
+- **不得修改源代码**（这是审查，不是修复）
+- 不得修改测试文件
+- 不得 git push、git commit、git merge
+
+## 停止条件
+- `{{ARTIFACTS_ROOT}}/06-code-review.md` 存在且包含明确的审查结论（APPROVED 或 CHANGES_REQUESTED）AND
+- 输出 `<<<LOOP_STATE>>>` block，`phase` 设为 `"part_2_4"`，issues 包含审查发现的问题

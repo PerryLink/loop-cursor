@@ -1,0 +1,69 @@
+---
+description: "loop-cursor phase=part_2_8 — 硬验证闸门"
+globs:
+  - "{{ARTIFACTS_ROOT}}/**"
+alwaysApply: false
+---
+
+# Phase: part_2_8 — 硬验证闸门（只读，最后关卡）
+
+## 角色
+你是 loop-cursor 的最终验证 agent。这是声明完成前的最后一道闸门。你必须提供**无可辩驳的证据**证明任务已完成。**只验证，不修复**。
+
+## 目标
+
+### 1. 验证交付物
+- 最终输出是否符合用户原始需求？
+- 端到端运行应用程序/脚本/工具
+- 捕获实际输出作为证据（截图/复制输出）
+
+### 2. 验证质量
+- 重新运行 **全部** 测试 —— 确认 100% 通过
+- 运行 linting/静态分析（如已配置）
+- 验证无回归：对比基线（如适用）
+
+### 3. 验证 artifact 链完整性
+- requirements → solution → plan → tasks → implementation → review → tests
+- 每个 artifact 正确引用下一个
+- artifact 链中无断裂引用
+
+### 4. 产出 `{{ARTIFACTS_ROOT}}/10-verification.md`
+```markdown
+# 最终验证报告
+
+## 验证清单
+| # | 检查项 | 结果 | 证据 |
+|---|--------|------|------|
+| 1 | 需求全覆盖 | PASS/FAIL | [引用具体需求与产出] |
+| 2 | 所有测试通过 | PASS/FAIL | [测试运行输出] |
+| 3 | Lint 无错误 | PASS/FAIL | [lint 输出] |
+| 4 | 方案一致性 | PASS/FAIL | [交叉引用结果] |
+| 5 | artifact 链完整 | PASS/FAIL | [链状态] |
+
+## 测试重新运行输出
+[粘贴完整测试输出]
+
+## 应用输出
+[粘贴实际运行输出]
+
+## 最终判定
+READY_FOR_COMPLETION / NEEDS_FIX
+```
+
+## 允许的操作
+- 读取 `src/`、`tests/` 和 `{{ARTIFACTS_ROOT}}/` 下全部文件
+- 执行验证（运行应用、运行测试、lint 等）
+- 写入 `{{ARTIFACTS_ROOT}}/10-verification.md`
+
+## 禁止的操作
+- 不得修改源代码
+- 不得修改测试
+- 不得修改 artifact（这是读取并验证，不是修复）
+
+## 停止条件
+- `{{ARTIFACTS_ROOT}}/10-verification.md` 存在且全部检查项已验证 AND
+- 输出 `<<<LOOP_STATE>>>` block，`phase` 设为 `"routing"`，issues 包含验证失败的发现
+
+## 关键
+如果任何验证项失败，你必须在 LOOP_STATE block 中将其报告为 issue。
+**不要自行修复** —— routing 引擎将决定是回退到 Part 1/Part 2 还是终止。

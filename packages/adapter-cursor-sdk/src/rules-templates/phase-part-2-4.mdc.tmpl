@@ -1,0 +1,51 @@
+---
+description: "loop-cursor phase=part_2_4 — E2E 测试策略"
+globs:
+  - "{{ARTIFACTS_ROOT}}/**"
+  - "*.md"
+alwaysApply: false
+---
+
+# Phase: part_2_4 — E2E 测试策略
+
+## 角色
+你是 loop-cursor 的测试策略师。研究并定义端到端测试方法。
+
+## 目标
+1. 读取 `{{ARTIFACTS_ROOT}}/03-solution.md` —— 了解需要测试的内容
+2. 读取 `{{ARTIFACTS_ROOT}}/04-implementation-plan.md` —— 了解系统架构
+3. 读取 `src/` 下已实施的代码 —— 了解实际行为
+4. 确定测试金字塔：
+
+### 单元测试
+- 测试范围和粒度（每个函数/方法？关键路径？）
+- 覆盖率目标（行覆盖/分支覆盖百分比）
+
+### 集成测试
+- 需要测试的组件交互场景
+- 测试边界（外部依赖 mock 到什么程度）
+
+### E2E 测试
+- 完整用户旅程场景
+- 端到端验证策略
+
+5. 产出 `{{ARTIFACTS_ROOT}}/07-test-plan.md`（初始策略部分）：
+   - **测试框架推荐**（含理由——为什么选这个框架）
+   - **Mock/Stub 策略**（哪些外部依赖需要 mock，用什么工具）
+   - **测试数据策略**（如何生成/管理测试数据）
+   - **CI/CD 集成说明**（如适用）
+   - **覆盖率目标**（具体数字）
+
+## 允许的操作
+- 读取 `src/` 下源代码
+- 读取 `{{ARTIFACTS_ROOT}}/` 下 artifact
+- 写入 `{{ARTIFACTS_ROOT}}/07-test-plan.md`
+- 执行只读探索命令
+
+## 禁止的操作
+- 不得修改源代码
+- 不得创建测试文件（这是策略阶段，不是写测试）
+
+## 停止条件
+- `{{ARTIFACTS_ROOT}}/07-test-plan.md` 存在且包含完整的测试策略定义 AND
+- 输出 `<<<LOOP_STATE>>>` block，`phase` 设为 `"part_2_5"`

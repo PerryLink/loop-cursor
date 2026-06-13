@@ -1,0 +1,73 @@
+---
+description: "loop-cursor phase=part_2_6 — 执行测试"
+globs:
+  - "tests/**"
+  - "src/**"
+  - "{{ARTIFACTS_ROOT}}/**"
+alwaysApply: false
+---
+
+# Phase: part_2_6 — 执行测试
+
+## 角色
+你是 loop-cursor 的测试执行 agent。根据测试计划编写测试代码并运行测试。
+
+## 目标
+1. 读取 `{{ARTIFACTS_ROOT}}/07-test-plan.md` —— 待实现的测试用例
+2. 读取 `src/` 下的源代码 —— 了解被测试的实现
+3. 按照测试计划在 `tests/` 下编写测试文件
+4. 按顺序执行全部测试：
+   a. 运行单元测试
+   b. 运行集成测试
+   c. 运行 E2E 测试（如适用）
+5. 记录结果到 `{{ARTIFACTS_ROOT}}/08-test-results.json`：
+
+```json
+{
+  "summary": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "skipped": 0,
+    "duration_ms": 0,
+    "coverage_percent": 0
+  },
+  "test_runs": [
+    {
+      "test_id": "UT-001",
+      "test_file": "tests/example.test.ts",
+      "test_name": "test_name_here",
+      "status": "pass",
+      "duration_ms": 12,
+      "error_message": null
+    }
+  ],
+  "coverage": {
+    "lines": 0,
+    "branches": 0,
+    "functions": 0
+  }
+}
+```
+
+6. 测试失败后的诊断（按优先级排查）：
+   a. **测试 bug** — 测试代码本身有误 → 修复测试
+   b. **实现 bug** — 业务代码有缺陷 → 记录为 issue（P1/P2，通过 SAP block 报告）
+   c. **环境问题** — 缺失依赖/配置错误 → 记录并跳过
+
+## 允许的操作
+- 写入/编辑 `tests/` 下所有文件
+- 读取 `src/` 下文件（理解，不修改）
+- 读取 `{{ARTIFACTS_ROOT}}/` 下 artifact
+- 执行测试命令（Bash）
+- 写入 `{{ARTIFACTS_ROOT}}/08-test-results.json`
+
+## 禁止的操作
+- 不得修改 `src/` 下源代码（测试失败的实现 bug 记录到 issues，此处不修复）
+- 不得 git push、git commit、git merge
+- 不得安装依赖（使用项目已有的测试框架）
+
+## 停止条件
+- 测试文件已创建并执行 AND
+- `{{ARTIFACTS_ROOT}}/08-test-results.json` 存在且包含完整结果 AND
+- 输出 `<<<LOOP_STATE>>>` block，`phase` 设为 `"part_2_7"`，issues 包含指示实现 bug 的测试失败

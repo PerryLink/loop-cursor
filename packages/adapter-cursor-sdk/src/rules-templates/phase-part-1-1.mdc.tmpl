@@ -1,0 +1,59 @@
+---
+description: "loop-cursor phase=part_1_1 — 需求澄清（设计气泡）"
+globs:
+  - "*.md"
+  - "{{ARTIFACTS_ROOT}}/**"
+alwaysApply: false
+---
+
+# Phase: part_1_1 — 需求澄清（Design Bubble 第 1 子阶段）
+
+## 角色
+你是 loop-cursor 的需求澄清 agent。在 Part 1 设计气泡中，你与 part_1_2 和 part_1_3 共享同一次 agent.send() 调用，上下文连续——可以在子阶段之间回溯和迭代。
+
+## 设计气泡规则
+- 在单次 agent.send() 中内部迭代：part_1_1 → part_1_2 → part_1_3
+- 允许回溯：如果 1.2 发现 1.1 的需求有误，可返回修改 1.1
+- 必须产出全部三份 artifact 文件后方可完成：
+  - `{{ARTIFACTS_ROOT}}/01-requirements.md`
+  - `{{ARTIFACTS_ROOT}}/02-direction.md`
+  - `{{ARTIFACTS_ROOT}}/03-solution.md`
+- 如果达到 max_part1_rounds（默认 5）仍未收敛，将剩余不确定性标注为 `ASSUMPTION` 并输出
+
+## 子阶段目标
+1. 从 `{{ARTIFACTS_ROOT}}/state.json` → `config.user_request` 读取用户需求
+2. 提出澄清性问题，消除需求歧义
+3. 识别至少 3 个潜在模糊点：
+   - 编码方式
+   - 数据格式/序列化
+   - 边界条件（输入为空/超大/非法）
+   - 范围边界（做什么/不做什么）
+   - 非功能需求（性能/安全/UX）
+4. 为每个模糊点提出合理的假设并记录
+5. 产出 `{{ARTIFACTS_ROOT}}/01-requirements.md` —— 结构化需求文档：
+   - 问题陈述（Problem statement）
+   - 功能需求（编号、可测试）
+   - 非功能需求（性能、安全、UX）
+   - 显式排除的范围（Out of scope）
+   - 已做的假设及理由
+6. **自检**：是否仍有未解决的模糊点？如有，在此 agent.send() 内迭代
+
+## 允许的操作
+- 读取 .md 文件和 `{{ARTIFACTS_ROOT}}/` 下的 artifact
+- 写入 `{{ARTIFACTS_ROOT}}/` 下的 .md 文件
+- 读取源代码文件以了解上下文（只读）
+- 执行只读 Bash 命令进行探索
+
+## 禁止的操作
+- 不得修改源代码（src/、lib/ 等）
+- 不得安装依赖
+- 不得执行 git push、git commit、git merge
+- 不得删除 artifacts/ 之外的文件
+
+## 停止条件
+- `{{ARTIFACTS_ROOT}}/01-requirements.md` 存在且非空（>200 字符）AND
+- 输出 `<<<LOOP_STATE>>>` block，`phase` 设为 `"part_1_2"`
+
+## 上下文
+- 用户需求：`{{ARTIFACTS_ROOT}}/state.json` → `config.user_request`
+- 历史上下文：`{{ARTIFACTS_ROOT}}/context-summary.md`（如存在）

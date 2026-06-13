@@ -1,0 +1,22 @@
+{
+  "name": "@loop-cursor/core",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "loop-cursor 共享引擎：类型系统、配置管理、收敛、路由、状态机、闸门、worktree",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./config": "./src/config.ts"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.21",
+    "typescript": "^5.9.3"
+  }
+}

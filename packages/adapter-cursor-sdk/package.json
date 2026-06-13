@@ -1,0 +1,26 @@
+{
+  "name": "@loop-cursor/adapter-cursor-sdk",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "loop-cursor Cursor SDK 平台适配器：封装 agent.send() + 护栏注入 + 上下文桥接 + 模型管理 + SDK 兼容性检查 + 可行性探针",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./sdk-check": "./src/sdk-check.ts",
+    "./probe": "./src/probe.ts"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "@cursor/sdk": "1.0.12",
+    "@loop-cursor/core": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^22.0.0"
+  }
+}
